@@ -8,19 +8,18 @@ namespace UserHubAdminPortal.Controllers;
 
 public class MenuController : Controller
 {
-    private readonly HttpClient _httpClient;
+    //private readonly HttpClient _httpClient;
     private readonly ILogger<MenuController> _logger;
 
-    public MenuController(IHttpClientFactory httpClientFactory, ILogger<MenuController> logger)
+    public MenuController(ILogger<MenuController> logger)
     {
-        _httpClient = httpClientFactory.CreateClient("UserHubAPI");
         _logger = logger;
     }
 
     public async Task<String> Index()
     {
         const string url = "api/v1/menu/GetAll";
-        List<Menus>? menuList = await HTTPHelper<List<Menus>>.GetAPI(url, _httpClient);
+        List<Menus>? menuList = await HTTPHelper<List<Menus>>.GetAPI(url);
         return JsonConvert.SerializeObject(menuList);
         //return PartialView("Menu", menuList);
     }

@@ -6,16 +6,14 @@ namespace UserHubAdminPortal.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly HttpClient _httpClient;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IHttpClientFactory httpClientFactory, ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger)
     {
-        _httpClient = httpClientFactory.CreateClient("UserHubAPI");
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         return View();
     }

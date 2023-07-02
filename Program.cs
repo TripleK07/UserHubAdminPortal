@@ -3,23 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//http interceptor
-builder.Services.AddTransient<HttpInterceptor>();
-builder.Services.AddHttpClient("UserHubAPI")
-    .AddHttpMessageHandler<HttpInterceptor>();
-
-//builder.Services.AddHttpClient();
-// builder.Services.AddHttpClient("userHubAPI", httpClient =>
-// {
-//     httpClient.BaseAddress = new Uri("https://localhost:7014/api/");
-
-//     // using Microsoft.Net.Http.Headers;
-//     // The GitHub API requires two headers.
-//     httpClient.DefaultRequestHeaders.Add(
-//         HeaderNames.Accept, "application/json");
-//     httpClient.DefaultRequestHeaders.Add(
-//         HeaderNames.UserAgent, "HttpRequestsSample");
-// });
+//http interceptor is registered in HTTPHelper.cs
 
 var app = builder.Build();
 
@@ -43,3 +27,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
