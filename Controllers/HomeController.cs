@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Security.Claims;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using UserHubAdminPortal.Models;
 
@@ -15,6 +16,9 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        var u = User.FindFirst(c=> c.Type == ClaimTypes.Sid)?.Value;
+        var m = User.FindFirst(c=> c.Type == "Menus")?.Value;
+        var t = User.FindFirst(c=> c.Type == "Token")?.Value;
         return View();
     }
 

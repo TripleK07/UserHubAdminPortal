@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
 using Newtonsoft.Json;
 using UserHubAdminPortal.Config;
 
@@ -7,39 +9,12 @@ namespace UserHubAdminPortal.Helpers
     public static class HTTPHelper<T>
     {
         private const string API_URL = "https://localhost:7014/";
-        private static readonly IHttpClientFactory _httpClientFactory;
-        private static readonly IConfiguration _configuration;
-        private static readonly string _apiName;
-        static HTTPHelper()
+
+        public static async Task<T?> Get(string url, HttpClient _httpClient)
         {
-            // Build the configuration
-             _configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
-
-            // Create a new service collection
-            var services = new ServiceCollection();
-
-            //http interceptor
-            services.AddTransient<HttpInterceptor>();
-
-            // Read a value from the application.json file
-            _apiName = _configuration["HttpClient:UserHubApi"];
-
-            // Add the HttpClientFactory to the services collection
-            services.AddHttpClient(_apiName).AddHttpMessageHandler<HttpInterceptor>();
-
-            // Build the service provider
-            var serviceProvider = services.BuildServiceProvider();
-
-            // Get the IHttpClientFactory instance from the service provider
-            _httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-        }
-
-        public static async Task<T?> GetAPI(string url)
-        {
-            HttpClient _httpClient = _httpClientFactory.CreateClient(_apiName);
             url = API_URL + url;
+            _httpClient.BaseAddress = new Uri(url);
+
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
@@ -57,6 +32,35 @@ namespace UserHubAdminPortal.Helpers
             }
             catch
             {
+                return default;
+            }
+        }
+
+        public static async Task<T?> Post(string url, Object requestEntity, HttpClient _httpClient)
+        {
+            // Append the API_URL to the provided URL
+            url = API_URL + url;
+
+            // Set the HttpClient's base address, headers, and content type
+            _httpClient.BaseAddress = new Uri(url);
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // Serialize the request entity to JSON and create the request content
+            using var content = new StringContent(JsonConvert.SerializeObject(requestEntity), UTF8Encoding.UTF8, "application/json");
+
+            // Send the POST request and retrieve the response
+            using var response = await _httpClient.PostAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // If the response is successful, deserialize the response content to the specified entity type
+                var objsJsonString = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(objsJsonString);
+            }
+            else
+            {
+                // If the response is not successful, return the default value of the entity type
                 return default;
             }
         }

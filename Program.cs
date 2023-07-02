@@ -1,9 +1,26 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.Cookie.Name = "UserInfo";
+            options.Cookie.HttpOnly = true;
+            options.LoginPath = "/Account/Login";
+            // Configure other options as needed
+        });
+
 //http interceptor is registered in HTTPHelper.cs
+builder.Services.AddTransient<UserHubAdminPortal.Config.HttpInterceptor>();
+
+builder.Services.AddHttpClient("UserHubAPI")
+    .AddHttpMessageHandler<UserHubAdminPortal.Config.HttpInterceptor>();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -20,11 +37,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
 

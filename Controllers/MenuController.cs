@@ -16,12 +16,9 @@ public class MenuController : Controller
         _logger = logger;
     }
 
-    public async Task<String> Index()
+    public IActionResult Index()
     {
-        const string url = "api/v1/menu/GetAll";
-        List<Menus>? menuList = await HTTPHelper<List<Menus>>.GetAPI(url);
-        return JsonConvert.SerializeObject(menuList);
-        //return PartialView("Menu", menuList);
+        return View();
     }
 
     public IActionResult Privacy()

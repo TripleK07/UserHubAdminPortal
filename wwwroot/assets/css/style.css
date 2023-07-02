@@ -1258,3 +1258,11 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+.custom-icon-green {
+  color: green;
+}
+
+.custom-icon-red {
+  color: red;
+}

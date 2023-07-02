@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - UserHubAdminPortal</title>
+    <title>@ViewData["Title"] - User Hub Portal</title>
     <!-- Favicons -->
     <link href="~/assets/img/favicon.png" rel="icon">
     <link href="~/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -162,7 +162,42 @@
 
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar">
-        <div id="menuList"></div>
+        @{
+            var menusClaim = User.FindFirst(c=> c.Type == "Menus")?.Value;
+            var menus = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Menus>>(menusClaim);
+            <ul class="sidebar-nav" id="sidebar-nav">
+                @foreach (Menus parentItem in menus.Where(m => m.ParentId == Guid.Empty))
+                {
+                    @if(!menus.Any(m=> m.ParentId == parentItem.ParentId))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" asp-controller="@parentItem.ControllerName" asp-action="@parentItem.ActionName">
+                                <i class="bi bi-question-circle"></i>
+                                <span>@parentItem.MenuDescription</span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+                                <i class="bi bi-bar-chart"></i><span>@parentItem.MenuDescription</span><i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                                @foreach (Menus childItem in menus.Where(m => m.ParentId == parentItem.ID))
+                                {
+                                    <li>
+                                        <a asp-controller="@childItem.ControllerName" asp-action="@childItem.ActionName">
+                                            <i class="bi bi-circle"></i><span>@childItem.MenuDescription</span>
+                                        </a>
+                                    </li>
+                                }
+                           </ul>
+                        </li>
+                    }
+                }
+            </ul>
+        }
     </aside><!-- End Sidebar-->
 
     <main id="main" class="main">
@@ -172,7 +207,7 @@
     <!-- ======= Footer ======= -->
     <footer id="footer" class="footer">
     <div class="copyright">
-        &copy; Copyright <strong><span>UserHubPortal</span></strong>. All Rights Reserved
+        &copy; Copyright <strong><span>User Hub Portal</span></strong>. All Rights Reserved
     </div>
     <div class="credits">
         <!-- All the links in the footer should remain intact. -->
@@ -198,12 +233,6 @@
     <!-- Template Main JS File -->
     <script src="~/assets/js/main.js"></script>
     <script src="~/lib/jquery.min.js"></script>
-    <script>
-        $.get('@Url.Action("Index", "Menu")', function(content){
-            console.log(content);
-            $("#menuList").html(content);
-        });
-    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

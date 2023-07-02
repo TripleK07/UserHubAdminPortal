@@ -17,6 +17,10 @@ namespace UserHubAdminPortal.Models
 
         public Guid ParentId { get; set; } = Guid.Empty;
 
+        public String? ControllerName { get; set; }
+
+        public String? ActionName { get; set; }
+
         //public ICollection<RoleMenu> RoleMenu { get; set; } = null!;
     }
 }
