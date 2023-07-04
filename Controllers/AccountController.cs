@@ -21,16 +21,17 @@ public class AccountController : Controller
 
     public AccountController(ILogger<AccountController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
 	{
+		AppSettingsReader.GetAppSettings();
 		_logger = logger;
-        var apiName = configuration["HttpClient:userHubApi"];
-        _apiUrl = configuration["HttpClient:apiUrl"];
-		_httpClient = httpClientFactory.CreateClient(apiName);
+        _apiUrl = AppSettingsReader.appSettings.ApiUrl;        
+		_httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
 	}
 
     [AllowAnonymous]
     [HttpGet]
     public IActionResult Login()
     {
+        
         return View();
     }
 

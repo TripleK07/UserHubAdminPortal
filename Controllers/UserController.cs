@@ -14,11 +14,9 @@ public class UserController : Controller
 
 	public UserController(ILogger<UserController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
-
 		_logger = logger;
-		var apiName = configuration["HttpClient:userHubApi"];
-        _apiUrl = configuration["HttpClient:apiUrl"];
-		_httpClient = httpClientFactory.CreateClient(apiName);
+		_apiUrl = AppSettingsReader.appSettings.ApiUrl;
+		_httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
 	}
 
     public async Task<IActionResult> Index()
