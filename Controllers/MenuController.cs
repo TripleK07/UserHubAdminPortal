@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UserHubAdminPortal.Models;
 using UserHubAdminPortal.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UserHubAdminPortal.Controllers;
 
+[Authorize]
 public class MenuController : Controller
 {
     //private readonly HttpClient _httpClient;
@@ -24,11 +26,5 @@ public class MenuController : Controller
     public IActionResult Privacy()
     {
         return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

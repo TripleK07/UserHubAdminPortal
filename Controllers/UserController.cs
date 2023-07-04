@@ -10,17 +10,21 @@ public class UserController : Controller
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<UserController> _logger;
+	private readonly string _apiUrl = "";
 
-    public UserController(ILogger<UserController> logger, IHttpClientFactory httpClientFactory)
+	public UserController(ILogger<UserController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
-        _logger = logger;
-        _httpClient = httpClientFactory.CreateClient("UserHubAPI");
-    }
+
+		_logger = logger;
+		var apiName = configuration["HttpClient:userHubApi"];
+        _apiUrl = configuration["HttpClient:apiUrl"];
+		_httpClient = httpClientFactory.CreateClient(apiName);
+	}
 
     public async Task<IActionResult> Index()
     {
-        const string url = "api/v1/user/GetAll";
-        List<Users>? userList = await HTTPHelper<List<Users>>.Get(url, _httpClient);
+        string url = _apiUrl + "api/v1/user/GetAll";
+        List<Users>? userList = await HTTPHelper<List<Users>>.SendAsync(url, _httpClient, HttpMethod.Get);
         return View(userList);
     }
 }

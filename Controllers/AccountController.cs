@@ -1,38 +1,47 @@
 using System.Diagnostics;
+using System.Net.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using UserHubAdminPortal.Config;
 using UserHubAdminPortal.Helpers;
 using UserHubAdminPortal.Models;
 
 namespace UserHubAdminPortal.Controllers;
 
+[Authorize]
 public class AccountController : Controller
 {
-    private readonly HttpClient _httpClient;
+	private readonly HttpClient _httpClient;
     private readonly ILogger<AccountController> _logger;
+    private readonly string _apiUrl = "";
 
-    public AccountController(ILogger<AccountController> logger, IHttpClientFactory httpClientFactory)
-    {
-        _logger = logger;
-        _httpClient = httpClientFactory.CreateClient("UserHubAPI");
-    }
+    public AccountController(ILogger<AccountController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+	{
+		_logger = logger;
+        var apiName = configuration["HttpClient:userHubApi"];
+        _apiUrl = configuration["HttpClient:apiUrl"];
+		_httpClient = httpClientFactory.CreateClient(apiName);
+	}
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
 
-    [HttpPost]
+	[AllowAnonymous]
+	[HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginRequestModel model)
     {
         if (ModelState.IsValid)
         {
-            LoginResponseModel? loginResponse = await HTTPHelper<LoginResponseModel>.Post("api/v1/user/login", model, _httpClient);
+            LoginResponseModel? loginResponse = await HTTPHelper<LoginResponseModel>.SendAsync(_apiUrl + "api/v1/user/login",  _httpClient, HttpMethod.Post, model);
 
             if (loginResponse != null)
             {
@@ -49,7 +58,7 @@ public class AccountController : Controller
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
                     // Set any other authentication properties as needed
                 };
 
@@ -63,7 +72,7 @@ public class AccountController : Controller
             }
 
             // If the credentials are invalid, add a custom error message to the ModelState.
-            ModelState.AddModelError("", "Invalid credentials. Please try again.");
+            ModelState.AddModelError("errorMsg", "Invalid credentials. Please try again.");
         }
 
         // If the ModelState is invalid, return the login view with the validation errors displayed.
@@ -77,12 +86,6 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync("Cookies");
 
         // Redirect the user to the main page or a desired URL after successful logout.
-        return RedirectToAction("Index", "Home");
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return RedirectToAction("Login", "Account");
     }
 }

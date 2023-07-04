@@ -30,5 +30,23 @@ namespace UserHubAdminPortal.Config
 
             return await base.SendAsync(request, cancellationToken);
         }
-    }
+
+        /*
+		public async Task<HttpResponseMessage> GetAsync(string url)
+		{
+			using (var httpClient = new HttpClient(this))
+			{
+				return await httpClient.GetAsync(url);
+			}
+		}
+
+		public async Task<HttpResponseMessage> PostAsync(string url, HttpContent content)
+		{
+			using (var httpClient = new HttpClient(this))
+			{
+				return await httpClient.PostAsync(url, content);
+			}
+		}
+        */
+	}
 }
