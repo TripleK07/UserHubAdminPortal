@@ -1266,3 +1266,9 @@ h6 {
 .custom-icon-red {
   color: red;
 }
+
+.custom-table-header {
+    --bs-bg-opacity: 1;
+    background-color: #4854f4e6 !important;
+    color: white;
+}

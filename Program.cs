@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using UserHubAdminPortal.Config;
 using UserHubAdminPortal.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);

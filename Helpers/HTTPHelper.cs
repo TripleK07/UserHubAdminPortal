@@ -97,8 +97,12 @@ namespace UserHubAdminPortal.Helpers
 			}
 			else
 			{
-				// If the response is not successful, return the default value of the entity type
-				return default;
+                // If the response is not successful, return the default value of the entity type
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorMessage = !string.IsNullOrEmpty(errorContent) ? errorContent : response.StatusCode.ToString();
+                throw new Exception(errorMessage);
+
+                //return default;
 			}
 		}
 	}

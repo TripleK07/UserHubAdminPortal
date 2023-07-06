@@ -23,11 +23,7 @@ namespace UserHubAdminPortal.Config
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
-            // Call the inner handler to send the request
-            _ = await base.SendAsync(request, cancellationToken);
-
             // Perform interception logic after receiving the response
-
             return await base.SendAsync(request, cancellationToken);
         }
 

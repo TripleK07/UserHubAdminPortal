@@ -3,47 +3,94 @@
     ViewBag.Title = "Users";
     int i = 0;
 }
-<div class="row">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Users</h5>
-              <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Username</th>
-                      <th scope="col">Login ID</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Role</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                      @foreach (var item in Model)
-                      {
-                          i++;
-                          <tr>
-                              <th scope="row">@i</th>
-                              <td>@item.UserName</td>
-                              <td>@item.LoginID</td>
-                              <td>@item.Email</td>
-                              <td>-</td>
-                              @if (item.IsActive)
-                              {
-                                <td>
-                                  <i class="bi bi-check-circle me-1 custom-icon-green"></i>
-                                </td>
-                               }
-                              else{
-                                 <td>
-                                  <i class="bi bi-x-circle me-1 custom-icon-red"></i>
-                                </td>
-                              }
-                              <td></td>
-                          </tr>
-                      }
-                  </tbody>
-              </table>
-           </div>
-          </div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Users</h5>
+        <div id="partial-body"></div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="largeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="model-body">
+            </div>
+        </div>
+    </div>
+</div><!-- End Large Modal-->
+
+
+
+@section scripts{
+
+    <script>
+        $(document).ready(function () {
+            loadData();
+        });
+
+        function loadData() {
+            $.ajax({
+                cache: false,
+                url: '@Url.Action("List", "User")',
+                beforeSend: function () {
+                },
+                success: function (Data) {
+                    $("#partial-body").empty().append(Data);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function update() {
+            $.ajax({
+                cache: false,
+                url: '@Url.Action("Update", "User")',
+                type: "POST",
+                data: $("#modal-form").serialize(),
+                beforeSend: function () {
+                },
+                success: function (data) {
+                    if (data.status) {
+                        alert(data.message);
+                        $("#largeModal").modal('hide');
+                        loadData();
+                    }
+                    else{
+                        alert(data.message);
+                    }
+                },
+                complete: function () {
+                    
+                }
+            });
+        }
+
+        function showEditModal(UserID, isEdit) {
+            $.ajax({
+                cache: false,
+                url: '@Url.Action("GetById", "User")',
+                data: { UserID: UserID, isEdit: isEdit },
+                beforeSend: function () {
+                },
+                success: function (Data) {
+                    $("#model-body").empty().append(Data);
+                },
+                complete: function () {
+                    $("#largeModal").modal('show');
+
+                    $("#modal-form").submit(function (e) {
+                        e.preventDefault();
+                        update();
+                    });
+                }
+            });
+        }
+    </script>
+}

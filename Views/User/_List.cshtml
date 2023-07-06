@@ -1,0 +1,44 @@
+@model List<UserHubAdminPortal.Models.Users>
+@{
+    int i = 0;
+}
+
+<div class="table-responsive">
+    <table class="table">
+        <thead class="custom-table-header">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Login ID</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                i++;
+                <tr onclick="showEditModal('@item.ID', true)">
+                    <td scope="row">@i</td>
+                    <td>@item.UserName</td>
+                    <td>@item.LoginID</td>
+                    <td>@item.Email</td>
+                    <td>-</td>
+                    @if (item.IsActive)
+                    {
+                        <td>
+                            <i class="bi bi-check-circle me-1 custom-icon-green"></i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <i class="bi bi-x-circle me-1 custom-icon-red"></i>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -9,10 +9,16 @@ namespace UserHubAdminPortal.Helpers
 
 		static AppSettingsReader()
 		{
-			Configuration = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.json")
-				.Build();
-		}
+            //Configuration = new ConfigurationBuilder()
+            //	.AddJsonFile("appsettings.Development.json")
+            //	.Build();
+            
+			var builder = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
 
 		public static void GetAppSettings()
 		{
