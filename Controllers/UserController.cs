@@ -12,52 +12,67 @@ public class UserController : Controller
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<UserController> _logger;
-	private readonly string _apiUrl = "";
+    private readonly string _apiUrl = "";
 
-	public UserController(ILogger<UserController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public UserController(ILogger<UserController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
-		_logger = logger;
-		_apiUrl = AppSettingsReader.appSettings.ApiUrl + "api/v1/user/";
-		_httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
-	}
+        _logger = logger;
+        _apiUrl = AppSettingsReader.appSettings.ApiUrl + "api/v1/user/";
+        _httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
+    }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        //string url = _apiUrl + "GetAll";
-        //List<Users>? userList = await HTTPHelper<List<Users>>.SendAsync(url, _httpClient, HttpMethod.Get);
         return View();
     }
 
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        string url = _apiUrl + "GetAll";
-        List<Users>? userList = await HTTPHelper<List<Users>>.SendAsync(url, _httpClient, HttpMethod.Get);
+        List<Users>? userList = new();
+        try
+        {
+            string url = _apiUrl + "GetAll";
+            userList = await HTTPHelper<List<Users>>.SendAsync(url, _httpClient, HttpMethod.Get);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
         return PartialView("_List", userList);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetById(Guid userId, bool isEdit)
     {
+        Users? user = new();
         if (isEdit)
         {
-            string url = _apiUrl + "GetById/" + userId;
-            Users? user = await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Get);
-            return PartialView("_EditForm", user);
+            try
+            {
+                string url = _apiUrl + "GetById/" + userId;
+                user = await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Get);
+                return PartialView("_EditForm", user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return PartialView("_EditForm", user);
+            }
         }
-        else 
+        else
         {
-            return PartialView("_EditForm", new Users());
+            return PartialView("_EditForm", user);
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> Update(Users user)
     {
-        string url = _apiUrl + "Update";
         try
         {
+            string url = _apiUrl + "Update";
             await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Put, user);
 
             var msg = new { message = "Success", status = true };

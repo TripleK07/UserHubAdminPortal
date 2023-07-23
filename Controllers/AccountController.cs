@@ -15,17 +15,17 @@ namespace UserHubAdminPortal.Controllers;
 [Authorize]
 public class AccountController : Controller
 {
-	private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
     private readonly ILogger<AccountController> _logger;
     private readonly string _apiUrl = "";
 
     public AccountController(ILogger<AccountController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
-	{
-		AppSettingsReader.GetAppSettings();
-		_logger = logger;
-        _apiUrl = AppSettingsReader.appSettings.ApiUrl;        
-		_httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
-	}
+    {
+        AppSettingsReader.GetAppSettings();
+        _logger = logger;
+        _apiUrl = AppSettingsReader.appSettings.ApiUrl;
+        _httpClient = httpClientFactory.CreateClient(AppSettingsReader.appSettings.UserHubApi);
+    }
 
     [AllowAnonymous]
     [HttpGet]
@@ -34,45 +34,55 @@ public class AccountController : Controller
         return View();
     }
 
-	[AllowAnonymous]
-	[HttpPost]
+    [AllowAnonymous]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginRequestModel model)
     {
         if (ModelState.IsValid)
         {
-            LoginResponseModel? loginResponse = await HTTPHelper<LoginResponseModel>.SendAsync(_apiUrl + "api/v1/user/login",  _httpClient, HttpMethod.Post, model);
-
-            if (loginResponse != null)
+            try
             {
-                var claims = new List<Claim>
+                LoginResponseModel? loginResponse = await HTTPHelper<LoginResponseModel>.SendAsync(_apiUrl + "api/v1/user/login", _httpClient, HttpMethod.Post, model);
+
+                if (loginResponse != null)
                 {
+                    var claims = new List<Claim>
+                    {
                     new Claim(ClaimTypes.Sid, model.Username),
                     new Claim("Menus", JsonConvert.SerializeObject(loginResponse.Menus)),
                     new Claim("Token", loginResponse.Token),
                     // Add any additional claims as needed
-                };
+                    };
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
-                    // Set any other authentication properties as needed
-                };
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
+                        // Set any other authentication properties as needed
+                    };
 
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties
-                );
-                // Redirect the user to the main page or a desired URL after successful login.
-                return RedirectToAction("Index", "Home");
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties
+                    );
+                    // Redirect the user to the main page or a desired URL after successful login.
+                    return RedirectToAction("Index", "Home");
+                }
             }
-
-            // If the credentials are invalid, add a custom error message to the ModelState.
-            ModelState.AddModelError("errorMsg", "Invalid credentials. Please try again.");
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Unauthorized"))
+                {
+                    ModelState.AddModelError("errorMsg", "Invalid credentials. Please try again.");
+                }
+                else {
+                    ModelState.AddModelError("errorMsg", "Something went wrong. Please try again.");
+                }
+            }
         }
 
         // If the ModelState is invalid, return the login view with the validation errors displayed.

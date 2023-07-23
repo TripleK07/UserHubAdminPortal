@@ -57,13 +57,26 @@
                 beforeSend: function () {
                 },
                 success: function (data) {
-                    if (data.status) {
-                        alert(data.message);
+                    if (data.status) {                        
+                        Swal.fire({
+                            position: 'center',
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
                         $("#largeModal").modal('hide');
                         loadData();
                     }
                     else{
-                        alert(data.message);
+                        Swal.fire({
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'error'
+                        });
+
                     }
                 },
                 complete: function () {
@@ -84,7 +97,6 @@
                 },
                 complete: function () {
                     $("#largeModal").modal('show');
-
                     $("#modal-form").submit(function (e) {
                         e.preventDefault();
                         update();
