@@ -19,7 +19,7 @@
             @foreach (var item in Model)
             {
                 i++;
-                <tr onclick="showEditModal('@item.ID', true)">
+                <tr onclick="EditForm('@item.ID')">
                     <td scope="row">@i</td>
                     <td>@item.UserName</td>
                     <td>@item.LoginID</td>

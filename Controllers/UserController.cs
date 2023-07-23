@@ -44,7 +44,7 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetById(Guid userId, bool isEdit)
+    public async Task<IActionResult> GetForm(Guid userId, bool isEdit)
     {
         Users? user = new();
         if (isEdit)
@@ -53,17 +53,16 @@ public class UserController : Controller
             {
                 string url = _apiUrl + "GetById/" + userId;
                 user = await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Get);
-                return PartialView("_EditForm", user);
+                return PartialView("_Form", user);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                return PartialView("_EditForm", user);
+                return PartialView("_Form", user);
             }
         }
         else
         {
-            return PartialView("_EditForm", user);
+            return PartialView("_Form", user);
         }
     }
 
@@ -74,6 +73,24 @@ public class UserController : Controller
         {
             string url = _apiUrl + "Update";
             await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Put, user);
+
+            var msg = new { message = "Success", status = true };
+            return Json(msg);
+        }
+        catch (Exception ex)
+        {
+            var msg = new { message = ex.Message, status = false };
+            return Json(msg);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(Users user)
+    {
+        try
+        {
+            string url = _apiUrl + "Create";
+            await HTTPHelper<Users>.SendAsync(url, _httpClient, HttpMethod.Post, user);
 
             var msg = new { message = "Success", status = true };
             return Json(msg);

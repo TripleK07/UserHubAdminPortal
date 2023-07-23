@@ -25,7 +25,6 @@ builder.Services.AddHttpClient("UserHubAPI")
 builder.Services.AddHttpContextAccessor();
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
