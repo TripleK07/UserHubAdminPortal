@@ -1,11 +1,14 @@
 @model List<UserHubAdminPortal.Models.Users>
 @{
     ViewBag.Title = "Users";
-    int i = 0;
 }
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Users</h5>
+        <h5 class="card-title">Users 
+            <button class="btn btn-primary btn-circle" onclick="AddForm()" style='margin-bottom:3px;float:right;'>
+                <i class="bi bi-plus-circle"></i> Create
+            </button>
+        </h5>
         <div id="partial-body"></div>
     </div>
 </div>
@@ -48,7 +51,7 @@
             });
         }
 
-        function update() {
+        function Update() {
             $.ajax({
                 cache: false,
                 url: '@Url.Action("Update", "User")',
@@ -58,24 +61,82 @@
                 },
                 success: function (data) {
                     if (data.status) {
-                        alert(data.message);
+                        Swal.fire({
+                            position: 'center',
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
                         $("#largeModal").modal('hide');
                         loadData();
                     }
                     else{
-                        alert(data.message);
+                        Swal.fire({
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'error'
+                        });
+
                     }
                 },
                 complete: function () {
-                    
+
                 }
             });
         }
 
-        function showEditModal(UserID, isEdit) {
+        function Add() {
             $.ajax({
                 cache: false,
-                url: '@Url.Action("GetById", "User")',
+                url: '@Url.Action("Add", "User")',
+                type: "POST",
+                data: $("#modal-form").serialize(),
+                beforeSend: function () {
+                },
+                success: function (data) {
+                    if (data.status) {
+                        Swal.fire({
+                            position: 'center',
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        $("#largeModal").modal('hide');
+                        loadData();
+                    }
+                    else{
+                        Swal.fire({
+                            title: appTitle,
+                            text: data.message,
+                            icon: 'error'
+                        });
+
+                    }
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function AddForm() {
+            showModal(0, false)
+        }
+
+        function EditForm(UserID) {
+             showModal(UserID, true)
+        }
+
+        function showModal(UserID, isEdit) {
+            $.ajax({
+                cache: false,
+                url: '@Url.Action("GetForm", "User")',
                 data: { UserID: UserID, isEdit: isEdit },
                 beforeSend: function () {
                 },
@@ -84,10 +145,14 @@
                 },
                 complete: function () {
                     $("#largeModal").modal('show');
-
                     $("#modal-form").submit(function (e) {
-                        e.preventDefault();
-                        update();
+                       e.preventDefault();
+                        if (isEdit == true) {
+                            Update();
+                        }
+                        else {
+                            Add();
+                        }
                     });
                 }
             });
