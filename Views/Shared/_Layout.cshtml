@@ -186,8 +186,10 @@
                             <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                                 @foreach (Menus childItem in menus.Where(m => m.ParentId == parentItem.ID))
                                 {
+                                    @* asp-controller="@childItem.ControllerName" asp-action="@childItem.ActionName" *@
+                                     @* href="#" onclick="navigate('User', 'Index');return false;" *@
                                     <li>
-                                        <a asp-controller="@childItem.ControllerName" asp-action="@childItem.ActionName">
+                                        <a id="@childItem.ControllerName-@childItem.ActionName" href="#" onclick="navigate('@childItem.ControllerName', '@childItem.ActionName');return false;">
                                             <i class="bi bi-circle"></i><span>@childItem.MenuDescription</span>
                                         </a>
                                     </li>
@@ -201,7 +203,7 @@
     </aside><!-- End Sidebar-->
 
     <main id="main" class="main">
-        <div class="row">
+        <div class="row" id="_layout">
                 @RenderBody()
         </div>
     </main>
@@ -222,9 +224,7 @@
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-    <script>
-        var appTitle = "User Hub Portal";
-    </script>
+    
 
     <!-- Vendor JS Files -->
     <script src="~/assets/vendor/apexcharts/apexcharts.min.js"></script>
@@ -240,7 +240,35 @@
     <script src="~/assets/js/main.js"></script>
     <script src="~/lib/jquery.min.js"></script>
     <script src="~/lib/sweet-alert/sweetalert2.all.min.js"></script>
+    <!-- Page Specific JS File -->
 
+    <script>
+        var appTitle = "User Hub Portal";
+        $(document).ready(function () {
+            console.log('reloaded');
+        });
+
+        function navigate(controller, action)
+        {
+             $.ajax({
+                url: `/${controller}/${action}`,
+                beforeSend: function () {
+                },
+                success: function (data) {
+                     //render view without reloading
+                     $('#_layout').html(data);
+                     //remove current active status in menu
+                     $('#sidebar-nav li a').removeClass('active');
+                     //set active status in menu
+                     document.getElementById(controller +'-'+ action).classList.add("active");
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

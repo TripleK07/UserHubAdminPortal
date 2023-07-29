@@ -1,14 +1,17 @@
 @model List<UserHubAdminPortal.Models.Users>
 @{
     ViewBag.Title = "Users";
+    Layout = null;
+
 }
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Users 
-            <button class="btn btn-primary btn-circle" onclick="AddForm()" style='margin-bottom:3px;float:right;'>
+        <h5 class="card-title">Users <span class="round-button" onclick="AddForm()">+</span>
+            @* <button class="btn btn-primary btn-circle" onclick="AddForm()" style='margin-bottom:3px;float:right;'>
                 <i class="bi bi-plus-circle"></i> Create
-            </button>
+            </button> *@
         </h5>
+        
         <div id="partial-body"></div>
     </div>
 </div>
@@ -28,8 +31,6 @@
 </div><!-- End Large Modal-->
 
 
-
-@section scripts{
 
     <script>
         $(document).ready(function () {
@@ -158,4 +159,3 @@
             });
         }
     </script>
-}

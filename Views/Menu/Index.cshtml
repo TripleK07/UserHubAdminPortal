@@ -1,16 +1,6 @@
+@{
+    Layout = null;
+}
 
-@model List<UserHubAdminPortal.Models.Menus>
-<ul class="sidebar-nav" id="sidebar-nav">
-    @foreach (Menus item in Model)
-    {
-      <li class="nav-item">
-        <a class="nav-link" asp-controller="Home" asp-action="Privacy">
-                @* <a class="nav-link" href='@Url.Action("Index", "Home")'>Home</a> *@
-          <i class="bi bi-grid"></i>
-          <span> @item.MenuDescription </span>
-        </a>
-      </li>
-      <!-- End Home Nav -->
-    }
-</ul>
+<div>This is Menu page</div>
 
