@@ -32,130 +32,130 @@
 
 
 
-    <script>
-        $(document).ready(function () {
-            loadData();
+<script>
+    $(document).ready(function () {
+        loadData();
+    });
+
+    function loadData() {
+        $.ajax({
+            cache: false,
+            url: '@Url.Action("List", "User")',
+            beforeSend: function () {
+            },
+            success: function (Data) {
+                $("#partial-body").empty().append(Data);
+            },
+            complete: function () {
+
+            }
         });
+    }
 
-        function loadData() {
-            $.ajax({
-                cache: false,
-                url: '@Url.Action("List", "User")',
-                beforeSend: function () {
-                },
-                success: function (Data) {
-                    $("#partial-body").empty().append(Data);
-                },
-                complete: function () {
-
-                }
-            });
-        }
-
-        function Update() {
-            $.ajax({
-                cache: false,
-                url: '@Url.Action("Update", "User")',
-                type: "POST",
-                data: $("#modal-form").serialize(),
-                beforeSend: function () {
-                },
-                success: function (data) {
-                    if (data.status) {
-                        Swal.fire({
-                            position: 'center',
-                            title: appTitle,
-                            text: data.message,
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-
-                        $("#largeModal").modal('hide');
-                        loadData();
-                    }
-                    else{
-                        Swal.fire({
-                            title: appTitle,
-                            text: data.message,
-                            icon: 'error'
-                        });
-
-                    }
-                },
-                complete: function () {
-
-                }
-            });
-        }
-
-        function Add() {
-            $.ajax({
-                cache: false,
-                url: '@Url.Action("Add", "User")',
-                type: "POST",
-                data: $("#modal-form").serialize(),
-                beforeSend: function () {
-                },
-                success: function (data) {
-                    if (data.status) {
-                        Swal.fire({
-                            position: 'center',
-                            title: appTitle,
-                            text: data.message,
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-
-                        $("#largeModal").modal('hide');
-                        loadData();
-                    }
-                    else{
-                        Swal.fire({
-                            title: appTitle,
-                            text: data.message,
-                            icon: 'error'
-                        });
-
-                    }
-                },
-                complete: function () {
-
-                }
-            });
-        }
-
-        function AddForm() {
-            showModal(0, false)
-        }
-
-        function EditForm(UserID) {
-             showModal(UserID, true)
-        }
-
-        function showModal(UserID, isEdit) {
-            $.ajax({
-                cache: false,
-                url: '@Url.Action("GetForm", "User")',
-                data: { UserID: UserID, isEdit: isEdit },
-                beforeSend: function () {
-                },
-                success: function (Data) {
-                    $("#model-body").empty().append(Data);
-                },
-                complete: function () {
-                    $("#largeModal").modal('show');
-                    $("#modal-form").submit(function (e) {
-                       e.preventDefault();
-                        if (isEdit == true) {
-                            Update();
-                        }
-                        else {
-                            Add();
-                        }
+    function Update() {
+        $.ajax({
+            cache: false,
+            url: '@Url.Action("Update", "User")',
+            type: "POST",
+            data: $("#modal-form").serialize(),
+            beforeSend: function () {
+            },
+            success: function (data) {
+                if (data.status) {
+                    Swal.fire({
+                        position: 'center',
+                        title: appTitle,
+                        text: data.message,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500
                     });
+
+                    $("#largeModal").modal('hide');
+                    loadData();
                 }
-            });
-        }
-    </script>
+                else{
+                    Swal.fire({
+                        title: appTitle,
+                        text: data.message,
+                        icon: 'error'
+                    });
+
+                }
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function Add() {
+        $.ajax({
+            cache: false,
+            url: '@Url.Action("Add", "User")',
+            type: "POST",
+            data: $("#modal-form").serialize(),
+            beforeSend: function () {
+            },
+            success: function (data) {
+                if (data.status) {
+                    Swal.fire({
+                        position: 'center',
+                        title: appTitle,
+                        text: data.message,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    $("#largeModal").modal('hide');
+                    loadData();
+                }
+                else{
+                    Swal.fire({
+                        title: appTitle,
+                        text: data.message,
+                        icon: 'error'
+                    });
+
+                }
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function AddForm() {
+        showModal(0, false)
+    }
+
+    function EditForm(UserID) {
+            showModal(UserID, true)
+    }
+
+    function showModal(UserID, isEdit) {
+        $.ajax({
+            cache: false,
+            url: '@Url.Action("GetForm", "User")',
+            data: { UserID: UserID, isEdit: isEdit },
+            beforeSend: function () {
+            },
+            success: function (Data) {
+                $("#model-body").empty().append(Data);
+            },
+            complete: function () {
+                $("#largeModal").modal('show');
+                $("#modal-form").submit(function (e) {
+                    e.preventDefault();
+                    if (isEdit == true) {
+                        Update();
+                    }
+                    else {
+                        Add();
+                    }
+                });
+            }
+        });
+    }
+</script>
